@@ -1,3 +1,5 @@
+using GameStore.api.Middlewares;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
@@ -10,7 +12,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-// const string getGamesEndpoints = "GetGames";
+app.UseMiddleware<GameMiddleware>();
 
 app.MapControllers();
 

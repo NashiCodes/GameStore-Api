@@ -21,8 +21,8 @@ public class GamesController : Controller
         return game is null ? NotFound(new { message = $"Game with id {id} not found." }) : Ok(game);
     }
 
-    [ HttpPost ]
-    public IActionResult CreateGame(Game game) {
+    [ HttpPost]
+    public IActionResult CreateGame([FromBody ] Game game) {
         try {
             return Ok(GameRespository.CreateGame(game));
         }

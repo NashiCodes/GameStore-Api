@@ -1,6 +1,7 @@
 ﻿#region
 
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 #endregion
 
@@ -23,4 +24,19 @@ public class Game
     public DateTime ReleaseDate { get; set; }
 
     [ Url ] public required string ImageUri { get; set; }
+
+    public void Validate() {
+        var context = new ValidationContext(this, serviceProvider : null, items : null);
+        var results = new List<ValidationResult>();
+        bool isValid = Validator.TryValidateObject(this, context, results, true);
+
+        if (isValid == false) {
+            var sbrErrors = new StringBuilder();
+            foreach (var validationResult in results) {
+                sbrErrors.AppendLine(validationResult.ErrorMessage);
+            }
+
+            throw new ValidationException(sbrErrors.ToString());
+        }
+    }
 }
