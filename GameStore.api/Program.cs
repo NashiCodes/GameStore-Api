@@ -1,55 +1,62 @@
-using GameStore.api.Middlewares;
+using GameStore.api.Models.Entities;
+using GameStore.api.Models.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+const string GetGameEndpoint = "GetGames";
 
-app.UseRouting();
+var mapGroup = app.MapGroup("/games");
 
-app.UseAuthorization();
+mapGroup.MapGet("/", GameRespository.GetGames);
 
-app.UseMiddleware<GameMiddleware>();
+mapGroup.MapGet("/{id}", (int id) =>
+    {
+        var game = GameRespository.GetGame(id);
+        if (game is null) return Results.NotFound();
+        return Results.Ok(game);
+    })
+    .WithName(GetGameEndpoint);
 
-app.MapControllers();
+mapGroup.MapPost("/", (Game game) =>
+{
+    try
+    {
+        var createdGame = GameRespository.CreateGame(game);
+        return Results.CreatedAtRoute(GetGameEndpoint, new { id = createdGame.Id }, createdGame);
+    }
+    catch (Exception e)
+    {
+        return Results.BadRequest(e.Message);
+    }
+});
 
-// app.MapGet("/games/{id:int}", (int id) => {
-//         var game = games.Find(g => g.Id == id);
-//         return game is null ? Results.NotFound(new { message = $"Game with id {id} not found." }) : Results.Ok(game);
-//     })
-//     .WithName(getGamesEndpoints);
-//
-// app.MapPost("/games", (Game game) => {
-//     var validate = games.Find(g => g.Name == game.Name) is not null;
-//     if (validate) return Results.BadRequest(new { message = $"Game with name {game.Name} already exists." });
-//
-//     game.Id = games.Max(g => g.Id) + 1;
-//     games.Add(game);
-//     return Results.CreatedAtRoute(getGamesEndpoints, new { id = game.Id }, game);
-// });
-//
-// app.MapPut("/games/{id:int}", (int id, Game updatedGame) => {
-//     var existingGame = games.Find(g => g.Id == id);
-//     if (existingGame is null) return Results.NotFound(new { message = $"Game with id {id} not found." });
-//
-//     existingGame.Name = updatedGame.Name;
-//     existingGame.Genre = updatedGame.Genre;
-//     existingGame.Price = updatedGame.Price;
-//     existingGame.ReleaseDate = updatedGame.ReleaseDate;
-//     existingGame.ImageUri = updatedGame.ImageUri;
-//
-//     return Results.NoContent();
-// });
-//
-// app.MapDelete("/games/{id:int}", (int id) => {
-//     var game = games.Find(g => g.Id == id);
-//     if (game is null) return Results.NotFound(new { message = $"Game with id {id} not found." });
-//
-//     games.Remove(game);
-//     return Results.NoContent();
-// });
+mapGroup.MapPut("/{id}", (int Id, Game game) =>
+{
+    try
+    {
+        GameRespository.UpdateGame(Id, game);
+        return Results.Ok(new { message = "Game Id: {0}, was successful updated" });
+    }
+    catch (Exception e)
+    {
+        return Results.BadRequest(e.Message);
+    }
+});
+
+mapGroup.MapDelete("/{id}", (int id) =>
+{
+    try
+    {
+        GameRespository.DeleteGame(id);
+        return Results.Ok(new { message = "Game Id: {0}, was successful deleted" });
+    }
+    catch (Exception e)
+    {
+        return Results.BadRequest(e.Message);
+    }
+});
 
 app.Run();

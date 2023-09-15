@@ -1,9 +1,13 @@
-﻿namespace GameStore.api.Entities;
+﻿using GameStore.api.Models.Entities;
+
+namespace GameStore.api.Models.Persistence;
 
 public class GameRespository
 {
-    private static readonly HashSet<Game> Games = new() {
-        new Game {
+    private static readonly HashSet<Game> Games = new()
+    {
+        new Game
+        {
             Id = 1,
             Name = "The Last of Us Part II",
             Genre = "Action-adventure",
@@ -11,7 +15,8 @@ public class GameRespository
             ReleaseDate = new DateTime(2020, 6, 19),
             ImageUri = "https://upload.wikimedia.org/wikipedia/en/4/4f/TLOU2_box_art.jpg"
         },
-        new Game {
+        new Game
+        {
             Id = 2,
             Name = "The Witcher 3: Wild Hunt",
             Genre = "Action role-playing",
@@ -19,7 +24,8 @@ public class GameRespository
             ReleaseDate = new DateTime(2015, 5, 19),
             ImageUri = "https://upload.wikimedia.org/wikipedia/en/0/0c/Witcher_3_cover_art.jpg"
         },
-        new Game {
+        new Game
+        {
             Id = 3,
             Name = "Red Dead Redemption 2",
             Genre = "Action-adventure",
@@ -27,7 +33,8 @@ public class GameRespository
             ReleaseDate = new DateTime(2018, 10, 26),
             ImageUri = "https://upload.wikimedia.org/wikipedia/en/4/44/Red_Dead_Redemption_II.jpg"
         },
-        new Game {
+        new Game
+        {
             Id = 4,
             Name = "Grand Theft Auto V",
             Genre = "Action-adventure",
@@ -37,15 +44,18 @@ public class GameRespository
         }
     };
 
-    public static Game? GetGame(int id) {
+    public static Game? GetGame(int id)
+    {
         return Games.FirstOrDefault(g => g.Id == id);
     }
 
-    public static HashSet<Game> GetGames() {
+    public static HashSet<Game> GetGames()
+    {
         return Games;
     }
 
-    public static Game CreateGame(Game game) {
+    public static Game CreateGame(Game game)
+    {
         var validate = Games.FirstOrDefault(g => g.Name == game.Name) is not null;
         if (validate) throw new Exception($"Game with name {game.Name} already exists.");
 
@@ -54,7 +64,8 @@ public class GameRespository
         return game;
     }
 
-    public static Game UpdateGame(int Id, Game game) {
+    public static void UpdateGame(int Id, Game game)
+    {
         var gameToUpdate = Games.FirstOrDefault(g => g.Id == Id);
         if (gameToUpdate is null) throw new Exception($"Game with id {game.Id} not found.");
 
@@ -63,10 +74,10 @@ public class GameRespository
         gameToUpdate.Price = game.Price;
         gameToUpdate.ReleaseDate = game.ReleaseDate;
         gameToUpdate.ImageUri = game.ImageUri;
-        return gameToUpdate;
     }
 
-    public static void DeleteGame(int id) {
+    public static void DeleteGame(int id)
+    {
         var game = Games.FirstOrDefault(g => g.Id == id);
         if (game is null) throw new Exception($"Game with id {id} not found.");
 
