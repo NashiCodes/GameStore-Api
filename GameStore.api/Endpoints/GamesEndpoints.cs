@@ -1,5 +1,5 @@
-﻿using GameStore.api.Models.Entities;
-using GameStore.api.Models.Persistence;
+﻿using GameStore.api.Entities;
+using GameStore.api.Repositories;
 
 namespace GameStore.api.Endpoints;
 
@@ -40,7 +40,8 @@ public static class GamesEndpoints
             try
             {
                 GameRespository.UpdateGame(Id, game);
-                return Results.Ok(new { message = "Game Id: {0}, was successful updated" });
+
+                return Results.Ok(new { message = $"Game Id:{Id}, was successful updated" });
             }
             catch (Exception e)
             {
@@ -48,12 +49,12 @@ public static class GamesEndpoints
             }
         });
 
-        mapGroup.MapDelete("/{id}", (int id) =>
+        mapGroup.MapDelete("/{Id}", (int Id) =>
         {
             try
             {
-                GameRespository.DeleteGame(id);
-                return Results.Ok(new { message = "Game Id: {0}, was successful deleted" });
+                GameRespository.DeleteGame(Id);
+                return Results.Ok(new { message = $"Game Id:{Id}, was successful updated" });
             }
             catch (Exception e)
             {

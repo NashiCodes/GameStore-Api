@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 #endregion
 
-namespace GameStore.api.Models.Entities;
+namespace GameStore.api.Entities;
 
 public class Game
 {

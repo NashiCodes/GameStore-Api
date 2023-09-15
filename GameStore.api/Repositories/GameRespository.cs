@@ -1,6 +1,6 @@
-﻿using GameStore.api.Models.Entities;
+﻿using GameStore.api.Entities;
 
-namespace GameStore.api.Models.Persistence;
+namespace GameStore.api.Repositories;
 
 public class GameRespository
 {
@@ -49,7 +49,7 @@ public class GameRespository
         return Games.FirstOrDefault(g => g.Id == id);
     }
 
-    public static HashSet<Game> GetGames()
+    public static IEnumerable<Game> GetGames()
     {
         return Games;
     }
@@ -66,21 +66,23 @@ public class GameRespository
 
     public static void UpdateGame(int Id, Game game)
     {
-        var gameToUpdate = Games.FirstOrDefault(g => g.Id == Id);
-        if (gameToUpdate is null) throw new Exception($"Game with id {game.Id} not found.");
+        var gameToUpdate = Games.FirstOrDefault(g => g.Id == Id) ??
+                           throw new Exception($"Game id: {Id}, not found.");
+        Update(game, gameToUpdate);
+    }
 
+    public static void DeleteGame(int id)
+    {
+        var game = Games.FirstOrDefault(g => g.Id == id) ?? throw new Exception($"Game id: {id}, not found.");
+        Games.Remove(game);
+    }
+
+    private static void Update(Game game, Game gameToUpdate)
+    {
         gameToUpdate.Name = game.Name;
         gameToUpdate.Genre = game.Genre;
         gameToUpdate.Price = game.Price;
         gameToUpdate.ReleaseDate = game.ReleaseDate;
         gameToUpdate.ImageUri = game.ImageUri;
-    }
-
-    public static void DeleteGame(int id)
-    {
-        var game = Games.FirstOrDefault(g => g.Id == id);
-        if (game is null) throw new Exception($"Game with id {id} not found.");
-
-        Games.Remove(game);
     }
 }
