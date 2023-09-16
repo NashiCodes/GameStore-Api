@@ -12,21 +12,21 @@ public static class GamesEndpoints
         var mapGroup = routes.MapGroup("/games")
             .WithParameterValidation();
 
-        mapGroup.MapGet("/", GameRespository.GetGames);
+        mapGroup.MapGet("/", () => GameRespository.GetGames().Select(game => game.AsDto()));
 
         mapGroup.MapGet("/{id}", (int id) =>
             {
                 var game = GameRespository.GetGame(id);
                 if (game is null) return Results.NotFound();
-                return Results.Ok(game);
+                return Results.Ok(game.AsDto());
             })
             .WithName(GetGameEndpoint);
 
-        mapGroup.MapPost("/", (Game game) =>
+        mapGroup.MapPost("/", (CreateGameDto game) =>
         {
             try
             {
-                var createdGame = GameRespository.CreateGame(game);
+                var createdGame = GameRespository.CreateGame(game.AsEntity());
                 return Results.CreatedAtRoute(GetGameEndpoint, new { id = createdGame.Id }, createdGame);
             }
             catch (Exception e)
@@ -35,11 +35,11 @@ public static class GamesEndpoints
             }
         });
 
-        mapGroup.MapPut("/{id}", (int Id, Game game) =>
+        mapGroup.MapPut("/{id}", (int Id, UpdateGameDto game) =>
         {
             try
             {
-                GameRespository.UpdateGame(Id, game);
+                GameRespository.UpdateGame(Id, game.AsEntity());
 
                 return Results.Ok(new { message = $"Game Id:{Id}, was successful updated" });
             }
