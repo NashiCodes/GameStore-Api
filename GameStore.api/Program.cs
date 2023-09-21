@@ -1,4 +1,6 @@
+using GameStore.api.Data;
 using GameStore.api.Endpoints;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 /*
@@ -10,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
  ** I decided to use GameRespository class directly in the endpoints using static methods
  ** This way I don't need to create a new instance of GameRespository class in each endpoint
  */
+
+var connString = builder.Configuration.GetConnectionString("GameStoreContext");
+builder.Services.AddSqlServer<GameStoreContext>(connString);
+
 var app = builder.Build();
 
 app.MapGamesEndpoints();
