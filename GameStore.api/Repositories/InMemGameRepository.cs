@@ -2,7 +2,7 @@
 
 namespace GameStore.api.Repositories;
 
-public class GameRespository
+public class InMemGameRepository : IGameRepository
 {
     private static readonly HashSet<Game> Games = new()
     {
@@ -44,17 +44,17 @@ public class GameRespository
         }
     };
 
-    public static Game? GetGame(int id)
+    public Game? GetGame(int id)
     {
         return Games.FirstOrDefault(g => g.Id == id);
     }
 
-    public static IEnumerable<Game> GetGames()
+    public IEnumerable<Game> GetGames()
     {
         return Games;
     }
 
-    public static Game CreateGame(Game game)
+    public Game CreateGame(Game game)
     {
         var validate = Games.FirstOrDefault(g => g.Name == game.Name) is not null;
         if (validate) throw new Exception($"Game with name {game.Name} already exists.");
@@ -64,20 +64,20 @@ public class GameRespository
         return game;
     }
 
-    public static void UpdateGame(int Id, Game game)
+    public void UpdateGame(int Id, Game game)
     {
         var gameToUpdate = Games.FirstOrDefault(g => g.Id == Id) ??
                            throw new Exception($"Game id: {Id}, not found.");
         Update(game, gameToUpdate);
     }
 
-    public static void DeleteGame(int id)
+    public void DeleteGame(int id)
     {
         var game = Games.FirstOrDefault(g => g.Id == id) ?? throw new Exception($"Game id: {id}, not found.");
         Games.Remove(game);
     }
 
-    private static void Update(Game game, Game gameToUpdate)
+    private void Update(Game game, Game gameToUpdate)
     {
         gameToUpdate.Name = game.Name;
         gameToUpdate.Genre = game.Genre;

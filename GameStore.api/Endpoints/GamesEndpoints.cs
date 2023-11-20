@@ -12,21 +12,21 @@ public static class GamesEndpoints
         var mapGroup = routes.MapGroup("/games")
             .WithParameterValidation();
 
-        mapGroup.MapGet("/", () => GameRespository.GetGames().Select(game => game.AsDto()));
+        mapGroup.MapGet("/", (IGameRepository repository) => repository.GetGames().Select(game => game.AsDto()));
 
-        mapGroup.MapGet("/{id}", (int id) =>
+        mapGroup.MapGet("/{id}", (int id, IGameRepository repository) =>
             {
-                var game = GameRespository.GetGame(id);
+                var game = repository.GetGame(id);
                 if (game is null) return Results.NotFound();
                 return Results.Ok(game.AsDto());
             })
             .WithName(GetGameEndpoint);
 
-        mapGroup.MapPost("/", (CreateGameDto game) =>
+        mapGroup.MapPost("/", (CreateGameDto game, IGameRepository repository) =>
         {
             try
             {
-                var createdGame = GameRespository.CreateGame(game.AsEntity());
+                var createdGame = repository.CreateGame(game.AsEntity());
                 return Results.CreatedAtRoute(GetGameEndpoint, new { id = createdGame.Id }, createdGame);
             }
             catch (Exception e)
@@ -35,11 +35,11 @@ public static class GamesEndpoints
             }
         });
 
-        mapGroup.MapPut("/{id}", (int Id, UpdateGameDto game) =>
+        mapGroup.MapPut("/{id}", (int Id, UpdateGameDto game, IGameRepository repository) =>
         {
             try
             {
-                GameRespository.UpdateGame(Id, game.AsEntity());
+                repository.UpdateGame(Id, game.AsEntity());
 
                 return Results.Ok(new { message = $"Game Id:{Id}, was successful updated" });
             }
@@ -49,11 +49,11 @@ public static class GamesEndpoints
             }
         });
 
-        mapGroup.MapDelete("/{Id}", (int Id) =>
+        mapGroup.MapDelete("/{Id}", (int Id, IGameRepository repository) =>
         {
             try
             {
-                GameRespository.DeleteGame(Id);
+                repository.DeleteGame(Id);
                 return Results.Ok(new { message = $"Game Id:{Id}, was successful updated" });
             }
             catch (Exception e)

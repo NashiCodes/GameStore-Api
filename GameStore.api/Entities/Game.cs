@@ -4,7 +4,7 @@ namespace GameStore.api.Entities;
 
 public class Game
 {
-    public int Id { get; set; }
+    [Key][MaxLength(100)] public int Id { get; set; }
 
     [Required]
     [StringLength(50, MinimumLength = 3)]
